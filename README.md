@@ -7,3 +7,4 @@ helpdesk_ai/
 # PostgreSQL/MongoDB/Redis connection   -- db.py              
 # LangChain RAG pipeline                -- langchain_rag.py   
 #requirements                           -- requirements.txt
+-----------------------------------------------------------
