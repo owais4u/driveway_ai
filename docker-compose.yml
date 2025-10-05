@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  drive-thru-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - drive-thru-network
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: drivethru
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - drive-thru-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devpassword}
+    volumes:
+      - redis_data:/data
+    networks:
+      - drive-thru-network
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A src.app.services.celery_app worker --loglevel=info
+    environment:
+      - ENVIRONMENT=development
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - drive-thru-network
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A src.app.services.celery_app beat --loglevel=info
+    environment:
+      - ENVIRONMENT=development
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - drive-thru-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  drive-thru-network:
+    driver: bridge

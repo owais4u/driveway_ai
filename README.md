@@ -1,47 +1,18 @@
-# helpdesk_ai
+# Drive-Thru Ordering System
 
-helpdesk_ai/
-# FastAPI entrypoint                    -- main.py           
-# Celery background tasks               -- tasks.py           
-# Pydantic / SQLAlchemy models          -- models.py          
-# PostgreSQL/MongoDB/Redis connection   -- db.py              
-# LangChain RAG pipeline                -- langchain_rag.py   
-#requirements                           -- requirements.txt
------------------------------------------------------------
+AI-powered restaurant ordering assistant with local LLM capabilities.
 
-+-----------------------------+
-|         User                |
-| Voice / App / Kiosk / API   |
-+-------------+---------------+
-              |
-              v
-+-------------+----------------+
-|       FastAPI Gateway        |  <-- Handles REST / WebSocket / gRPC
-|  - Receives voice/text       |
-|  - Validates input           |
-+-------------+----------------+
-              |
-              v
-+-------------+----------------+
-|     LangChain RAG / LLM      | <-- GPU-enabled inference
-|  - Embedding query to DB     |
-|  - Context retrieval         |
-|  - LLM response generation   |
-+-------------+----------------+
-              |
-              v
-+-------------+----------------+
-|   Celery Worker Queue        | <-- Async tasks
-|  - Process orders            |
-|  - Send confirmation emails  |
-|  - Update POS / CRM          |
-+-------------+----------------+
-              |
-              v
-+-------------+----------------+
-| PostgreSQL / Redis / Cache   |
-|  - Order history             |
-|  - Menu, loyalty info        |
-|  - Redis caching             |
-+------------------------------+
+## Quick Start
 
+### Prerequisites
+- Docker & Docker Compose
+- Python 3.12+
+- PostgreSQL 15+
+- Redis 7+
+
+### Development Setup
+
+1. **Clone and setup:**
+```bash
+git clone https://github.com/your-org/drive-thru-ordering-system.git
+cd drive-thru-ordering-system
